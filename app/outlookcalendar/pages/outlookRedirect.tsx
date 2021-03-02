@@ -26,6 +26,7 @@ function OAuthCallbackPage() {
       if (!code || Array.isArray(code))
         return <p>Google Authentication failed with Code {code}. Please try again.</p>
       console.log("HANDLE IT!")
+      return null
       return postOAuthToken(code)
         .then(({ account, scopes }: credentials) => {
           if (!account || !scopes) {

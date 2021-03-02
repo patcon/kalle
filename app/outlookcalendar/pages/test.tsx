@@ -6,6 +6,46 @@ import getOutlookCredentials from "../queries/getOutlookCredentials"
 import { Button, Row, Col, Form } from "react-bootstrap"
 import getFreeBusySchedule from "../queries/getFreeBusySchedule"
 import createCalendarEvent from "../queries/createCalendarEvent"
+import { signIn } from "../authRedirect"
+const msal = require("@azure/msal-browser")
+const config = {
+  auth: {
+    clientId: "9516495f-79a2-4e13-860b-4ffebb531f95",
+    authority: "https://login.microsoftonline.com/common",
+    redirectUri: "http://localhost:3000/",
+    clientSecret: process.env.MICROSOFTCLIENTSECRET,
+  },
+  system: {
+    loggerOptions: {
+      loggerCallback(loglevel, message, containsPii) {
+        console.log(message)
+      },
+      piiLoggingEnabled: false,
+      logLevel: msal.LogLevel.Verbose,
+    },
+  },
+}
+
+const x = new msal.PublicClientApplication(config)
+function connect() {
+  signIn()
+  return
+  const authCodeUrlParameters = {
+    scopes: ["user.read"],
+    redirectUri: "http://localhost:3000/test",
+  }
+  x.loginRedirect({
+    redirectUri: authCodeUrlParameters.redirectUri,
+    scopes: authCodeUrlParameters.scopes,
+  })
+  console.log("DS")
+  x.handleRedirectPromise()
+    .then((dawd) => {
+      console.log(dawd)
+    })
+    .catch((err) => console.log(err))
+  console.log("D")
+}
 
 function TestFun() {
   const now = new Date()
@@ -13,6 +53,7 @@ function TestFun() {
   const [url] = useQuery(createConnection, undefined)
   return (
     <>
+      <button onClick={() => connect()}>dd</button>
       <Button variant="primary" href={url}>
         createConnection
       </Button>
